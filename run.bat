@@ -1,0 +1,1 @@
+nginx-ui.exe -config app.ini
