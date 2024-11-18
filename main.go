@@ -55,10 +55,13 @@ func Program(confPath string) func(l []net.Listener) error {
 		defer func(srv *http.Server, ctx context.Context) {
 			err := srv.Shutdown(ctx)
 			if err != nil {
-				logger.Fatal(err)
+				logger.Fatal(errors.WithStack(err))
 			}
 		}(srv, context.Background())
-		return srv.Serve(l[0])
+		if err := srv.Serve(l[0]); err != nil {
+			return errors.WithStack(err)
+		}
+		return nil
 	}
 }
 
