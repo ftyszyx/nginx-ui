@@ -1,11 +1,14 @@
 package logger
 
+//https://github.com/uber-go/zap
+
 import (
-    "github.com/gin-gonic/gin"
-    "go.uber.org/zap"
-    "go.uber.org/zap/zapcore"
-    "os"
-    "time"
+	"os"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var logger *zap.SugaredLogger
@@ -62,7 +65,7 @@ func Init(mode string) {
     )
 
     // From a zapcore.Core, it's easy to construct a Logger.
-    logger = zap.New(core, zap.AddCaller()).WithOptions(zap.AddCallerSkip(1)).Sugar()
+    logger = zap.New(core, zap.AddCaller()).WithOptions(zap.AddCallerSkip(10)).Sugar()
 }
 
 // Sync flushes any buffered log entries.
