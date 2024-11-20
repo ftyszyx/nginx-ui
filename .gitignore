@@ -17,3 +17,4 @@ casdoor.pub
 .idea/webServers.xml
 casdoor.pem
 server/test.db
+server/log
