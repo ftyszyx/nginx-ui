@@ -7,9 +7,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
+
 
 var logger *zap.SugaredLogger
 
@@ -18,6 +20,15 @@ func Init(mode string) {
     // First, define our level-handling logic.
     highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
         return lvl >= zapcore.ErrorLevel
+    })
+    allPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+        switch mode {
+        case gin.ReleaseMode:
+            return lvl >= zapcore.InfoLevel
+        case gin.DebugMode:
+            return true
+        }
+        return false
     })
     lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
         switch mode {
@@ -33,6 +44,12 @@ func Init(mode string) {
     // Directly output to stdout and stderr, and add caller information.
     consoleDebugging := zapcore.Lock(os.Stdout)
     consoleErrors := zapcore.Lock(os.Stderr)
+    err := os.MkdirAll("./log", os.ModePerm)
+    if err != nil {
+        panic(err)
+    }
+    writer, _ := rotatelogs.New("./log/app.log.%Y%m%d%H%M",rotatelogs.WithMaxAge(30*24*time.Hour),rotatelogs.WithRotationTime(time.Hour*24))
+    writeSyncer := zapcore.AddSync(writer)
     encodeCaller := zapcore.FullCallerEncoder
     if mode == gin.ReleaseMode {
         encodeCaller = zapcore.ShortCallerEncoder
@@ -56,12 +73,15 @@ func Init(mode string) {
     encoderConfig.ConsoleSeparator = "\t"
     encoderConfig.EncodeLevel = colorLevelEncoder
     consoleEncoder := zapcore.NewConsoleEncoder(encoderConfig)
+    encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
+    fileEncoder := zapcore.NewConsoleEncoder(encoderConfig)
 
     // Join the outputs, encoders, and level-handling functions into
     // zapcore.Cores, then tee the two cores together.
     core := zapcore.NewTee(
         zapcore.NewCore(consoleEncoder, consoleErrors, highPriority),
         zapcore.NewCore(consoleEncoder, consoleDebugging, lowPriority),
+        zapcore.NewCore(fileEncoder, writeSyncer, allPriority),
     )
 
     // From a zapcore.Core, it's easy to construct a Logger.

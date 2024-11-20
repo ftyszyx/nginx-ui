@@ -71,14 +71,17 @@ func main() {
 	flag.Parse()
 
 	settings.Init(confPath)
+	logger.Info("init settings ok",confPath)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
+	var addresses []string = []string{fmt.Sprintf("%s:%d", cSettings.ServerSettings.Host, cSettings.ServerSettings.Port)}
+	logger.Info("listening on addresses", addresses)
 
 	err := risefront.New(ctx, risefront.Config{
 		Run:       Program(confPath),
 		Name:      "nginx-ui",
-		Addresses: []string{fmt.Sprintf("%s:%d", cSettings.ServerSettings.Host, cSettings.ServerSettings.Port)},
+		Addresses: addresses,
 		ErrorHandler: func(kind string, err error) {
 			if errors.Is(err, net.ErrClosed) {
 				return

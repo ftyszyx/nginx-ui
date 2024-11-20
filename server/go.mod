@@ -165,6 +165,8 @@ require (
 	github.com/labbsr0x/bindman-dns-webhook v1.0.2 // indirect
 	github.com/labbsr0x/goh v1.0.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
+	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible // indirect
+	github.com/lestrrat-go/strftime v1.1.0 // indirect
 	github.com/linode/linodego v1.42.0 // indirect
 	github.com/liquidweb/liquidweb-cli v0.7.0 // indirect
 	github.com/liquidweb/liquidweb-go v1.6.4 // indirect
@@ -287,7 +289,11 @@ require (
 )
 
 replace code.pfad.fr/risefront v1.0.0 => github.com/nginxui/risefront v1.0.3
+
 replace github.com/uozi-tech/cosy => ../packages/cosy
+
 replace github.com/uozi-tech/cosy-driver-mysql => ../packages/cosy-driver-mysql
+
 replace github.com/uozi-tech/cosy-driver-postgres => ../packages/cosy-driver-postgres
+
 replace github.com/uozi-tech/cosy-driver-sqlite => ../packages/cosy-driver-sqlite

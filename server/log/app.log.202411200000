@@ -1,0 +1,90 @@
+2024-11-20 12:42:35	[32mINFO[0m	RecordServerAnalytic Started
+2024-11-20 12:42:46	[32mINFO[0m	Server exited
+2024-11-20 12:42:52	[32mINFO[0m	RecordServerAnalytic Started
+{"L":"\u001b[32mINFO\u001b[0m","T":"2024-11-20 14:38:50","M":"RecordServerAnalytic Started"}
+2024-11-20 14:51:07	INFO	RecordServerAnalytic Started
+2024-11-20 15:10:07	INFO	RecordServerAnalytic Started
+2024-11-20 15:15:18	INFO	listening on addresses [:9000]
+2024-11-20 15:15:18	INFO	RecordServerAnalytic Started
+2024-11-20 15:18:49	INFO	init settings ok app.ini
+2024-11-20 15:18:49	INFO	listening on addresses [:9000]
+2024-11-20 15:18:49	INFO	RecordServerAnalytic Started
+2024-11-20 15:20:16	INFO	init settings ok app.ini
+2024-11-20 15:20:16	INFO	listening on addresses [:9011]
+2024-11-20 15:20:16	INFO	RecordServerAnalytic Started
+2024-11-20 15:21:04	ERROR	/root/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185	runtime error: invalid memory address or nil pointer dereference
+goroutine 50 [running]:
+github.com/uozi-tech/cosy/router.Init.recovery.func2.1()
+	/home/work/nginx_ui/nginx-ui/packages/cosy/router/middleware.go:15 +0x65
+panic({0x387f580?, 0x7520900?})
+	/usr/local/go/src/runtime/panic.go:785 +0x132
+github.com/0xJacky/Nginx-UI/api/user.Login(0xc001b6a500)
+	/home/work/nginx_ui/nginx-ui/server/api/user/auth.go:50 +0xba
+github.com/gin-gonic/gin.(*Context).Next(0xc001b6a500)
+	/root/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185 +0x2b
+github.com/0xJacky/Nginx-UI/router.InitRouter.IPWhiteList.func3(0xc001b6a500)
+	/home/work/nginx_ui/nginx-ui/server/internal/middleware/ip_whitelist.go:14 +0x55
+github.com/gin-gonic/gin.(*Context).Next(...)
+	/root/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc001b6a500)
+	/root/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/logger.go:249 +0xe5
+github.com/gin-gonic/gin.(*Context).Next(0xc001b6a500)
+	/root/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185 +0x2b
+github.com/
+2024-11-20 15:21:34	DEBUG	WebAuthn settings are not configured
+2024-11-20 15:21:36	INFO	ACME Default User registered
+2024-11-20 15:21:42	INFO	/root/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/gin.go:589	[User Login] zyx
+2024-11-20 15:26:34	DEBUG	clean expired auth tokens
+2024-11-20 15:31:34	DEBUG	clean expired auth tokens
+2024-11-20 15:36:34	DEBUG	clean expired auth tokens
+2024-11-20 15:41:34	DEBUG	clean expired auth tokens
+2024-11-20 15:46:34	DEBUG	clean expired auth tokens
+2024-11-20 15:51:34	INFO	AutoCert Worker Started
+2024-11-20 15:51:34	DEBUG	clean expired auth tokens
+2024-11-20 15:51:34	INFO	AutoCert Worker End
+2024-11-20 15:55:28	INFO	init settings ok app.ini
+2024-11-20 15:55:28	INFO	listening on addresses [:9011]
+2024-11-20 15:55:28	DEBUG	WebAuthn settings are not configured
+2024-11-20 15:55:28	INFO	RecordServerAnalytic Started
+2024-11-20 15:56:36	ERROR	/root/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185	open /etc/nginx/streams-available: no such file or directory
+2024-11-20 16:00:28	DEBUG	clean expired auth tokens
+2024-11-20 16:05:28	DEBUG	clean expired auth tokens
+2024-11-20 16:10:28	DEBUG	clean expired auth tokens
+2024-11-20 16:15:28	DEBUG	clean expired auth tokens
+2024-11-20 16:20:28	DEBUG	clean expired auth tokens
+2024-11-20 16:25:28	INFO	AutoCert Worker Started
+2024-11-20 16:25:28	DEBUG	clean expired auth tokens
+2024-11-20 16:25:28	INFO	AutoCert Worker End
+2024-11-20 16:30:28	DEBUG	clean expired auth tokens
+2024-11-20 16:35:28	DEBUG	clean expired auth tokens
+2024-11-20 16:40:28	DEBUG	clean expired auth tokens
+2024-11-20 16:45:28	DEBUG	clean expired auth tokens
+2024-11-20 16:50:28	DEBUG	clean expired auth tokens
+2024-11-20 16:55:28	INFO	AutoCert Worker Started
+2024-11-20 16:55:28	DEBUG	clean expired auth tokens
+2024-11-20 16:55:28	INFO	AutoCert Worker End
+2024-11-20 17:00:28	DEBUG	clean expired auth tokens
+2024-11-20 17:05:28	DEBUG	clean expired auth tokens
+2024-11-20 17:10:28	DEBUG	clean expired auth tokens
+2024-11-20 17:15:28	DEBUG	clean expired auth tokens
+2024-11-20 17:20:28	DEBUG	clean expired auth tokens
+2024-11-20 17:25:28	DEBUG	clean expired auth tokens
+2024-11-20 17:25:28	INFO	AutoCert Worker Started
+2024-11-20 17:25:28	INFO	AutoCert Worker End
+2024-11-20 17:30:28	DEBUG	clean expired auth tokens
+2024-11-20 17:35:28	DEBUG	clean expired auth tokens
+2024-11-20 17:40:28	DEBUG	clean expired auth tokens
+2024-11-20 17:45:28	DEBUG	clean expired auth tokens
+2024-11-20 17:50:28	DEBUG	clean expired auth tokens
+2024-11-20 17:55:28	INFO	AutoCert Worker Started
+2024-11-20 17:55:28	DEBUG	clean expired auth tokens
+2024-11-20 17:55:28	INFO	AutoCert Worker End
+2024-11-20 18:00:28	DEBUG	clean expired auth tokens
+2024-11-20 18:05:28	DEBUG	clean expired auth tokens
+2024-11-20 18:10:28	DEBUG	clean expired auth tokens
+2024-11-20 18:15:28	DEBUG	clean expired auth tokens
+2024-11-20 18:20:28	DEBUG	clean expired auth tokens
+2024-11-20 18:25:28	INFO	AutoCert Worker Started
+2024-11-20 18:25:28	DEBUG	clean expired auth tokens
+2024-11-20 18:25:28	INFO	AutoCert Worker End
+2024-11-20 18:30:28	DEBUG	clean expired auth tokens

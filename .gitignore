@@ -16,3 +16,4 @@ casdoor.pub
 .idea/deployment.xml
 .idea/webServers.xml
 casdoor.pem
+server/test.db
