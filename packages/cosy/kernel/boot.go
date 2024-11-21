@@ -9,11 +9,11 @@ func Boot() {
     defer recovery()
 
     for _, v := range async {
-        v()
+        go v()
     }
 
     for _, v := range syncs {
-        go v()
+        v()
     }
 }
 

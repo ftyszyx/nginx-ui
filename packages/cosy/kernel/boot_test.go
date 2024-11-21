@@ -1,9 +1,10 @@
 package kernel
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var a = 1
@@ -18,5 +19,5 @@ func TestBoot(t *testing.T) {
 	Boot()
 	time.Sleep(1 * time.Second)
 
-	assert.Equal(t, 3, a, "a should be 3")
+	assert.Equal(t, 2, a, "a should be 3")
 }

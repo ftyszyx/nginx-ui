@@ -3,6 +3,10 @@ package kernel
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"mime"
+	"path"
+	"runtime"
+
 	"github.com/0xJacky/Nginx-UI/internal/analytic"
 	"github.com/0xJacky/Nginx-UI/internal/cache"
 	"github.com/0xJacky/Nginx-UI/internal/cert"
@@ -18,15 +22,12 @@ import (
 	sqlite "github.com/uozi-tech/cosy-driver-sqlite"
 	"github.com/uozi-tech/cosy/logger"
 	cSettings "github.com/uozi-tech/cosy/settings"
-	"mime"
-	"path"
-	"runtime"
 )
 
 func Boot() {
 	defer recovery()
 
-	async := []func(){
+	syncs := []func(){
 		InitJsExtensionType,
 		InitDatabase,
 		InitNodeSecret,
@@ -35,15 +36,15 @@ func Boot() {
 		cache.Init,
 	}
 
-	syncs := []func(){
+	asyncs := []func(){
 		analytic.RecordServerAnalytic,
 	}
 
-	for _, v := range async {
+	for _, v := range syncs {
 		v()
 	}
 
-	for _, v := range syncs {
+	for _, v := range asyncs {
 		go v()
 	}
 }

@@ -29,7 +29,7 @@ func Program(confPath string) func(l []net.Listener) error {
 		defer logger.Info("Server exited")
 		cosy.RegisterModels(model.GenerateAllModel()...)
 
-		cosy.RegisterAsyncFunc(kernel.Boot, router.InitRouter)
+		cosy.RegisterSyncsFunc(kernel.Boot, router.InitRouter)
 
 		// Initialize settings package
 		settings.Init(confPath)

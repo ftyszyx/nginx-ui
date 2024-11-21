@@ -19,3 +19,4 @@ casdoor.pem
 server/test.db
 server/log
 server/log
+*.db
