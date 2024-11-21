@@ -288,8 +288,6 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace code.pfad.fr/risefront v1.0.0 => github.com/nginxui/risefront v1.0.3
-
 replace github.com/uozi-tech/cosy => ../packages/cosy
 
 replace github.com/uozi-tech/cosy-driver-mysql => ../packages/cosy-driver-mysql
@@ -297,3 +295,5 @@ replace github.com/uozi-tech/cosy-driver-mysql => ../packages/cosy-driver-mysql
 replace github.com/uozi-tech/cosy-driver-postgres => ../packages/cosy-driver-postgres
 
 replace github.com/uozi-tech/cosy-driver-sqlite => ../packages/cosy-driver-sqlite
+
+replace code.pfad.fr/risefront => ../packages/risefront
