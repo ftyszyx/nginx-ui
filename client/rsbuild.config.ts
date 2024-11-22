@@ -4,15 +4,23 @@ import { pluginBabel } from "@rsbuild/plugin-babel";
 import { pluginLess } from "@rsbuild/plugin-less";
 import { pluginVue } from "@rsbuild/plugin-vue";
 import { pluginVueJsx } from "@rsbuild/plugin-vue-jsx";
+import { pluginImageCompress } from "@rsbuild/plugin-image-compress";
 
 export default defineConfig({
   performance: {
-    bundleAnalyze: process.env.BUNDLE_ANALYZE
-      ? {
-          analyzerMode: "server",
-          openAnalyzer: true,
-        }
-      : {},
+    chunkSplit: {
+      strategy: "split-by-experience",
+      forceSplitting: {
+        "vue3-apexcharts": /node_modules[\\/]vue3-apexcharts/,
+      },
+    },
+    bundleAnalyze:
+      process.env.BUNDLE_ANALYZE === "true"
+        ? {
+            analyzerMode: "server",
+            openAnalyzer: true,
+          }
+        : { analyzerMode: "disabled" },
   },
   html: {
     template: "index.html",
@@ -24,6 +32,7 @@ export default defineConfig({
     pluginVue(),
     pluginVueJsx(),
     pluginLess(),
+    pluginImageCompress(),
   ],
   output: {
     filename: {
