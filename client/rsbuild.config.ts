@@ -5,6 +5,9 @@ import { pluginLess } from "@rsbuild/plugin-less";
 import { pluginVue } from "@rsbuild/plugin-vue";
 import { pluginVueJsx } from "@rsbuild/plugin-vue-jsx";
 import { pluginImageCompress } from "@rsbuild/plugin-image-compress";
+import pluginAutoImport from "unplugin-auto-import/rspack";
+import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
+import pluginComponents from "unplugin-vue-components/rspack";
 
 export default defineConfig({
   performance: {
@@ -24,6 +27,27 @@ export default defineConfig({
   },
   html: {
     template: "index.html",
+  },
+  tools: {
+    rspack: {
+      plugins: [
+        pluginComponents({
+          resolvers: [AntDesignVueResolver({ importStyle: false })],
+          directoryAsNamespace: true,
+        }),
+        pluginAutoImport({
+          imports: [
+            "vue",
+            "vue-router",
+            "pinia",
+            {
+              "@/gettext": ["$gettext", "$pgettext", "$ngettext", "$npgettext"],
+            },
+          ],
+          vueTemplate: true,
+        }),
+      ],
+    },
   },
   plugins: [
     pluginBabel({

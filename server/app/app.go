@@ -4,6 +4,6 @@ import (
 	"embed"
 )
 
-//dist/* dist/*/*
-//go:embed i18n.json src/language/* src/language/*/*
+//dist/* dist/*/* src/language/* src/language/*/*
+//go:embed i18n.json
 var DistFS embed.FS

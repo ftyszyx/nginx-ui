@@ -7,7 +7,7 @@ import (
 func InitPublicRouter(r *gin.RouterGroup) {
 	r.GET("install", InstallLockCheck)
 	r.POST("install", InstallNginxUI)
-	r.GET("translation/:code", GetTranslation)
+	// r.GET("translation/:code", GetTranslation)
 }
 
 func InitPrivateRouter(r *gin.RouterGroup) {
