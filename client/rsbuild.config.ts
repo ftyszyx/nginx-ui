@@ -8,6 +8,7 @@ import { pluginImageCompress } from "@rsbuild/plugin-image-compress";
 import pluginAutoImport from "unplugin-auto-import/rspack";
 import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
 import pluginComponents from "unplugin-vue-components/rspack";
+import Dotenv from "dotenv-webpack";
 
 export default defineConfig({
   performance: {
@@ -31,6 +32,7 @@ export default defineConfig({
   tools: {
     rspack: {
       plugins: [
+        new Dotenv(),
         pluginComponents({
           resolvers: [AntDesignVueResolver({ importStyle: false })],
           directoryAsNamespace: true,
