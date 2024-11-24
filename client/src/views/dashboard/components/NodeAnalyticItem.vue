@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import cpu from '@/assets/svg/cpu.svg?component'
-import memory from '@/assets/svg/memory.svg?component'
-import UsageProgressLine from '@/components/Chart/UsageProgressLine.vue'
-import { bytesToSize } from '@/lib/helper'
-import Icon, { ArrowDownOutlined, ArrowUpOutlined, DatabaseOutlined, LineChartOutlined } from '@ant-design/icons-vue'
+import cpu from "@/assets/svg/cpu.svg";
+import memory from "@/assets/svg/memory.svg";
+import UsageProgressLine from "@/components/Chart/UsageProgressLine.vue";
+import { bytesToSize } from "@/lib/helper";
+import Icon, { ArrowDownOutlined, ArrowUpOutlined, DatabaseOutlined, LineChartOutlined } from "@ant-design/icons-vue";
 
 defineProps<{
   item: {
     avg_load: {
-      load1: number
-      load5: number
-      load15: number
-    }
+      load1: number;
+      load5: number;
+      load15: number;
+    };
     network: {
-      bytesSent: number
-      bytesRecv: number
-    }
-    cpu_percent: number
-    cpu_num: number
-    memory_percent: number
-    memory_total: string
-    disk_percent: number
-    disk_total: string
-  }
-}>()
+      bytesSent: number;
+      bytesRecv: number;
+    };
+    cpu_percent: number;
+    cpu_num: number;
+    memory_percent: number;
+    memory_total: string;
+    disk_percent: number;
+    disk_total: string;
+  };
+}>();
 </script>
 
 <template>
@@ -31,9 +31,8 @@ defineProps<{
     <div class="hardware-monitor-item longer">
       <div class="mb-1">
         <LineChartOutlined class="mr-1" />
-        <span class="load-avg-describe">1min:</span>{{ ` ${item.avg_load?.load1?.toFixed(2)}` }} ·
-        <span class="load-avg-describe">5min:</span>{{ item.avg_load?.load5?.toFixed(2) }} ·
-        <span class="load-avg-describe">15min:</span>{{ item.avg_load?.load15?.toFixed(2) }}
+        <span class="load-avg-describe">1min:</span>{{ ` ${item.avg_load?.load1?.toFixed(2)}` }} · <span class="load-avg-describe">5min:</span
+        >{{ item.avg_load?.load5?.toFixed(2) }} · <span class="load-avg-describe">15min:</span>{{ item.avg_load?.load15?.toFixed(2) }}
       </div>
       <div class="flex">
         <div class="sm:text-sm md:text-xs lg:text-sm">
@@ -85,36 +84,36 @@ defineProps<{
     width: 140px;
     margin-right: 20px;
 
-    @media(min-width: 1800px) {
+    @media (min-width: 1800px) {
       width: 300px;
       margin-bottom: 10px;
       margin-right: 50px;
     }
 
-    @media(min-width: 1600px) and (max-width: 1800px) {
+    @media (min-width: 1600px) and (max-width: 1800px) {
       width: 270px;
       margin-bottom: 10px;
       margin-right: 20px;
     }
 
-    @media(min-width: 1500px) and (max-width: 1600px) {
+    @media (min-width: 1500px) and (max-width: 1600px) {
       width: 230px;
       margin-bottom: 10px;
       margin-right: 30px;
     }
 
-    @media(min-width: 1400px) and (max-width: 1500px) {
+    @media (min-width: 1400px) and (max-width: 1500px) {
       width: 180px;
       margin-bottom: 10px;
       margin-right: 25px;
     }
 
-    @media(min-width: 400px) and (max-width: 1000px) {
+    @media (min-width: 400px) and (max-width: 1000px) {
       width: 280px;
       margin-bottom: 10px;
     }
 
-    @media(max-width: 400px) {
+    @media (max-width: 400px) {
       width: 200px;
       margin-bottom: 10px;
     }

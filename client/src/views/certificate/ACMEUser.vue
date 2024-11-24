@@ -23,7 +23,7 @@ const columns: Column[] = [
     },
   },
   {
-    title: () => gettext("Email"),
+    title: () => $gettext("Email"),
     dataIndex: "email",
     sorter: true,
     pithy: true,
@@ -35,7 +35,7 @@ const columns: Column[] = [
     },
   },
   {
-    title: () => gettext("CA Dir"),
+    title: () => $gettext("CA Dir"),
     dataIndex: "ca_dir",
     sorter: true,
     pithy: true,

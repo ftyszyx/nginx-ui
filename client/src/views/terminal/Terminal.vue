@@ -8,7 +8,7 @@ import _ from "lodash";
 import "@xterm/xterm/css/xterm.css";
 
 let term: Terminal | null;
-let ping: ReturnType<typeof setInterval> | null;
+let ping: number | undefined;
 
 const router = useRouter();
 const websocket = shallowRef();

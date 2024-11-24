@@ -1,14 +1,15 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
     "types": []
   },
-  "include": ["src/**/*", "auto-imports.d.ts", "components.d.ts", "env.d.ts", "src/**/*.vue"],
+  "include": ["src/**/*", "auto-imports.d.ts", "components.d.ts", "env.d.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
     {

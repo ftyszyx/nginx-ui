@@ -1,56 +1,59 @@
 <script setup lang="ts">
-import type { Environment } from '@/api/environment'
-import type { Ref } from 'vue'
-import environment from '@/api/environment'
+import type { Environment } from "@/api/environment";
+import type { Ref } from "vue";
+import environment from "@/api/environment";
 
 const props = defineProps<{
-  hiddenLocal?: boolean
-}>()
+  hiddenLocal?: boolean;
+}>();
 
-const target = defineModel<number[]>('target')
-const map = defineModel<Record<number, string>>('map')
+const target = defineModel<number[]>("target");
+const map = defineModel<Record<number, string>>("map");
 
-const data = ref([]) as Ref<Environment[]>
-const data_map = ref({}) as Ref<Record<number, Environment>>
+const data = ref([]) as Ref<Environment[]>;
+const data_map = ref({}) as Ref<Record<number, Environment>>;
 
 onMounted(async () => {
-  let hasMore = true
-  let page = 1
+  let hasMore = true;
+  let page = 1;
   while (hasMore) {
-    await environment.get_list({ page, enabled: true }).then(r => {
-      data.value.push(...r.data)
-      r.data?.forEach(node => {
-        data_map.value[node.id] = node
+    await environment
+      .get_list({ page, enabled: true })
+      .then((r) => {
+        data.value.push(...r.data);
+        r.data?.forEach((node) => {
+          data_map.value[node.id] = node;
+        });
+        hasMore = r.data.length === r.pagination?.per_page;
+        page++;
       })
-      hasMore = r.data.length === r.pagination?.per_page
-      page++
-    }).catch(() => {
-      hasMore = false
-    })
+      .catch(() => {
+        hasMore = false;
+      });
   }
-})
+});
 
 const value = computed({
   get() {
-    return target.value
+    return target.value;
   },
   set(v: number[]) {
-    if (typeof map.value === 'object') {
-      const _map = {}
+    if (typeof map.value === "object") {
+      const _map: Record<number, string> = {};
 
-      v?.filter(id => id !== 0).forEach(id => {
-        _map[id] = data_map.value[id].name
-      })
+      v?.filter((id) => id !== 0).forEach((id) => {
+        _map[id] = data_map.value[id].name;
+      });
 
-      map.value = _map
+      map.value = _map;
     }
-    target.value = v.filter(id => id !== 0)
+    target.value = v.filter((id) => id !== 0);
   },
-})
+});
 
 const noData = computed(() => {
-  return props.hiddenLocal && !data?.value?.length
-})
+  return props.hiddenLocal && !data?.value?.length;
+});
 </script>
 
 <template>
@@ -61,36 +64,24 @@ const noData = computed(() => {
       'justify-center': noData,
     }"
   >
-    <ARow
-      v-if="!noData"
-      :gutter="[16, 16]"
-    >
+    <ARow v-if="!noData" :gutter="[16, 16]">
       <ACol v-if="!hiddenLocal">
         <ACheckbox :value="0">
-          {{ $gettext('Local') }}
+          {{ $gettext("Local") }}
         </ACheckbox>
         <ATag color="green">
-          {{ $gettext('Online') }}
+          {{ $gettext("Online") }}
         </ATag>
       </ACol>
-      <ACol
-        v-for="(node, index) in data"
-        :key="index"
-      >
+      <ACol v-for="(node, index) in data" :key="index">
         <ACheckbox :value="node.id">
           {{ node.name }}
         </ACheckbox>
-        <ATag
-          v-if="node.status"
-          color="green"
-        >
-          {{ $gettext('Online') }}
+        <ATag v-if="node.status" color="green">
+          {{ $gettext("Online") }}
         </ATag>
-        <ATag
-          v-else
-          color="error"
-        >
-          {{ $gettext('Offline') }}
+        <ATag v-else color="error">
+          {{ $gettext("Offline") }}
         </ATag>
       </ACol>
     </ARow>
@@ -98,6 +89,4 @@ const noData = computed(() => {
   </ACheckboxGroup>
 </template>
 
-<style scoped lang="less">
-
-</style>
+<style scoped lang="less"></style>

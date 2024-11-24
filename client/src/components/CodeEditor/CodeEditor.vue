@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import ace from 'ace-builds'
-import extSearchboxUrl from 'ace-builds/src-noconflict/ext-searchbox?url'
-import { VAceEditor } from 'vue3-ace-editor'
-import 'ace-builds/src-noconflict/mode-nginx'
-import 'ace-builds/src-noconflict/theme-monokai'
+import ace from "ace-builds";
+import extSearchboxUrl from "ace-builds/src-noconflict/ext-searchbox";
+import { VAceEditor } from "vue3-ace-editor";
+import "ace-builds/src-noconflict/mode-nginx";
+import "ace-builds/src-noconflict/theme-monokai";
 
 const props = defineProps<{
-  content?: string
-  defaultHeight?: string
-  readonly?: boolean
-  placeholder?: string
-}>()
+  content?: string;
+  defaultHeight?: string;
+  readonly?: boolean;
+  placeholder?: string;
+}>();
 
-const emit = defineEmits(['update:content'])
+const emit = defineEmits(["update:content"]);
 
 const value = computed({
   get() {
-    return props.content ?? ''
+    return props.content ?? "";
   },
   set(v) {
-    emit('update:content', v)
+    emit("update:content", v);
   },
-})
+});
 
-ace.config.setModuleUrl('ace/ext/searchbox', extSearchboxUrl)
+ace.config.setModuleUrl("ace/ext/searchbox", extSearchboxUrl);
 </script>
 
 <template>

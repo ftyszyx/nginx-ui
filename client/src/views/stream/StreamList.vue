@@ -32,7 +32,7 @@ const columns: Column[] = [
         template.push($gettext("Enabled"));
       } else {
         template.push(<Badge status="warning" />);
-        template.push(gettext("Disabled"));
+        template.push($gettext("Disabled"));
       }
 
       return h("div", template);
@@ -148,7 +148,7 @@ function handleAddStream() {
       disable-delete
       disable-view
       @click-edit="
-        (r) =>
+        (r: any) =>
           $router.push({
             path: `/stream/${r}`,
           })

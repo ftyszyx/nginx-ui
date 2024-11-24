@@ -1,211 +1,210 @@
 <script setup lang="ts" generic="T=any">
-import type { Pagination } from '@/api/curd'
-import type Curd from '@/api/curd'
-import type { Column } from '@/components/StdDesign/types'
-import type { TableProps } from 'ant-design-vue'
-import type { Key } from 'ant-design-vue/es/_util/type'
-import type { FilterValue } from 'ant-design-vue/es/table/interface'
-import type { SorterResult, TablePaginationConfig } from 'ant-design-vue/lib/table/interface'
-import type { ComputedRef, Ref } from 'vue'
-import type { RouteParams } from 'vue-router'
-import { getPithyColumns } from '@/components/StdDesign/StdDataDisplay/methods/columns'
-import useSortable from '@/components/StdDesign/StdDataDisplay/methods/sortable'
-import StdDataEntry from '@/components/StdDesign/StdDataEntry'
-import { HolderOutlined } from '@ant-design/icons-vue'
-import { watchPausable } from '@vueuse/core'
-import { message } from 'ant-design-vue'
-import _ from 'lodash'
-import StdPagination from './StdPagination.vue'
+import type { Pagination } from "@/api/curd";
+import type Curd from "@/api/curd";
+import type { Column } from "@/components/StdDesign/types";
+import type { TableProps } from "ant-design-vue";
+import type { Key } from "ant-design-vue/es/_util/type";
+import type { FilterValue } from "ant-design-vue/es/table/interface";
+import type { SorterResult, TablePaginationConfig } from "ant-design-vue/lib/table/interface";
+import type { ComputedRef, Ref } from "vue";
+import type { RouteParams } from "vue-router";
+import { getPithyColumns } from "@/components/StdDesign/StdDataDisplay/methods/columns";
+import useSortable from "@/components/StdDesign/StdDataDisplay/methods/sortable";
+import StdDataEntry from "@/components/StdDesign/StdDataEntry";
+import { HolderOutlined } from "@ant-design/icons-vue";
+import { watchPausable } from "@vueuse/core";
+import { message } from "ant-design-vue";
+import _ from "lodash";
+import StdPagination from "./StdPagination.vue";
 
 // eslint-disable-next-line ts/no-explicit-any
 export interface StdTableProps<T = any> {
-  title?: string
-  mode?: string
-  rowKey?: string
+  title?: string;
+  mode?: string;
+  rowKey?: string;
 
-  api: Curd<T>
-  columns: Column[]
+  api: Curd<T>;
+  columns: Column[];
   // eslint-disable-next-line ts/no-explicit-any
-  getParams?: Record<string, any>
-  size?: string
-  disableQueryParams?: boolean
-  disableSearch?: boolean
-  pithy?: boolean
-  exportExcel?: boolean
-  exportMaterial?: boolean
+  getParams?: Record<string, any>;
+  size?: string;
+  disableQueryParams?: boolean;
+  disableSearch?: boolean;
+  pithy?: boolean;
+  exportExcel?: boolean;
+  exportMaterial?: boolean;
   // eslint-disable-next-line ts/no-explicit-any
-  overwriteParams?: Record<string, any>
-  disableView?: boolean
-  disableModify?: boolean
-  selectionType?: string
-  sortable?: boolean
-  disableDelete?: boolean
-  disablePagination?: boolean
-  sortableMoveHook?: (oldRow: number[], newRow: number[]) => boolean
-  scrollX?: string | number
+  overwriteParams?: Record<string, any>;
+  disableView?: boolean;
+  disableModify?: boolean;
+  selectionType?: string;
+  sortable?: boolean;
+  disableDelete?: boolean;
+  disablePagination?: boolean;
+  sortableMoveHook?: (oldRow: number[], newRow: number[]) => boolean;
+  scrollX?: string | number;
   // eslint-disable-next-line ts/no-explicit-any
-  getCheckboxProps?: (record: any) => any
+  getCheckboxProps?: (record: any) => any;
 }
 
 const props = withDefaults(defineProps<StdTableProps<T>>(), {
-  rowKey: 'id',
-})
+  rowKey: "id",
+});
 
-const emit = defineEmits([
-  'clickEdit',
-  'clickView',
-  'clickBatchModify',
-])
+const emit = defineEmits(["clickEdit", "clickView", "clickBatchModify"]);
 
-const selectedRowKeys = defineModel<(number | string)[]>('selectedRowKeys', {
+const selectedRowKeys = defineModel<(number | string)[]>("selectedRowKeys", {
   default: () => reactive([]),
-})
+});
 
-const selectedRows = defineModel<T[]>('selectedRows', {
+const selectedRows = defineModel<T[]>("selectedRows", {
   default: () => reactive([]),
-})
+});
 
-const route = useRoute()
+const route = useRoute();
 
-const dataSource: Ref<T[]> = ref([])
-const expandKeysList: Ref<Key[]> = ref([])
+const dataSource: Ref<T[]> = ref([]);
+const expandKeysList: Ref<Key[]> = ref([]);
 
 watch(dataSource, () => {
-  const res: Key[] = []
+  const res: Key[] = [];
 
-  function buildKeysList(record) {
-    record.children?.forEach(v => {
-      buildKeysList(v)
-    })
-    res.push(record[props.rowKey])
+  // eslint-disable-next-line ts/no-explicit-any
+  function buildKeysList(record: any) {
+    record.children?.forEach((v: any) => {
+      buildKeysList(v);
+    });
+    res.push(record[props.rowKey]);
   }
 
-  dataSource.value.forEach(v => {
-    buildKeysList(v)
-  })
+  dataSource.value.forEach((v: any) => {
+    buildKeysList(v);
+  });
 
-  expandKeysList.value = res
-})
+  expandKeysList.value = res;
+});
 
 // eslint-disable-next-line ts/no-explicit-any
-const rowsKeyIndexMap: Ref<Record<number, any>> = ref({})
-const loading = ref(true)
+const rowsKeyIndexMap: Ref<Record<number, any>> = ref({});
+const loading = ref(true);
 // eslint-disable-next-line ts/no-explicit-any
-const selectedRecords: Ref<Record<any, any>> = ref({})
+const selectedRecords: Ref<Record<any, any>> = ref({});
 
 // This can be useful if there are more than one StdTable in the same page.
-const randomId = ref(Math.random().toString(36).substring(2, 8))
-const updateFilter = ref(0)
-const init = ref(false)
+const randomId = ref(Math.random().toString(36).substring(2, 8));
+const updateFilter = ref(0);
+const init = ref(false);
 
 const pagination: Pagination = reactive({
   total: 1,
   per_page: 10,
   current_page: 1,
   total_pages: 1,
-})
+});
 
 const params = reactive({
   ...props.getParams,
-})
+});
 
 onMounted(() => {
-  selectedRows.value.forEach(v => {
-    selectedRecords.value[v[props.rowKey]] = v
-  })
-})
+  selectedRows.value.forEach((v) => {
+    selectedRecords.value[v[props.rowKey]] = v;
+  });
+});
 
 const searchColumns = computed(() => {
-  const _searchColumns: Column[] = []
+  const _searchColumns: Column[] = [];
 
   props.columns.forEach((column: Column) => {
     if (column.search) {
-      if (typeof column.search === 'object') {
+      if (typeof column.search === "object") {
         _searchColumns.push({
           ...column,
           edit: column.search,
-        })
-      }
-
-      else {
-        _searchColumns.push({ ...column })
+        });
+      } else {
+        _searchColumns.push({ ...column });
       }
     }
-  })
+  });
 
-  return _searchColumns
-})
+  return _searchColumns;
+});
 
 const pithyColumns = computed<Column[]>(() => {
-  if (props.pithy)
-    return getPithyColumns(props.columns)
+  if (props.pithy) return getPithyColumns(props.columns);
 
-  return props.columns?.filter(c => {
-    return !c.hiddenInTable
-  })
-})
+  return props.columns?.filter((c) => {
+    return !c.hiddenInTable;
+  });
+});
 
 const batchColumns = computed(() => {
-  return props.columns?.filter(column => column.batch) || []
-})
+  return props.columns?.filter((column) => column.batch) || [];
+});
 
 const get_list = _.debounce(_get_list, 100, {
   leading: true,
   trailing: false,
-})
+});
 
-const filterParams = reactive({})
+const filterParams = reactive({});
 
 watch(filterParams, () => {
   Object.assign(params, {
     ...filterParams,
     page: 1,
-    trash: route.query.trash === 'true',
-  })
-})
+    trash: route.query.trash === "true",
+  });
+});
 
 onMounted(() => {
   if (!props.disableQueryParams) {
     Object.assign(params, {
       ...route.query,
-      trash: route.query.trash === 'true',
-    })
+      trash: route.query.trash === "true",
+    });
 
     Object.assign(filterParams, {
       ...route.query,
-    })
+    });
   }
 
-  get_list()
+  get_list();
 
-  if (props.sortable)
-    initSortable()
+  if (props.sortable) initSortable();
 
-  init.value = true
-})
+  init.value = true;
+});
 
 defineExpose({
   get_list,
   pagination,
   resetSelection,
-})
+});
 
 function destroy(id: number | string) {
-  props.api!.destroy(id, { permanent: params.trash }).then(() => {
-    get_list()
-    message.success($gettext('Deleted successfully'))
-  }).catch(e => {
-    message.error($gettext(e?.message ?? 'Server error'))
-  })
+  props
+    .api!.destroy(id, { permanent: params.trash })
+    .then(() => {
+      get_list();
+      message.success($gettext("Deleted successfully"));
+    })
+    .catch((e) => {
+      message.error($gettext(e?.message ?? "Server error"));
+    });
 }
 
 function recover(id: number | string) {
-  props.api.recover(id).then(() => {
-    message.success($gettext('Recovered Successfully'))
-    get_list()
-  }).catch(e => {
-    message.error(e?.message ?? $gettext('Server error'))
-  })
+  props.api
+    .recover(id)
+    .then(() => {
+      message.success($gettext("Recovered Successfully"));
+      get_list();
+    })
+    .catch((e) => {
+      message.error(e?.message ?? $gettext("Server error"));
+    });
 }
 
 // eslint-disable-next-line ts/no-explicit-any
@@ -213,104 +212,98 @@ function buildIndexMap(data: any, level: number = 0, index: number = 0, total: n
   if (data && data.length > 0) {
     // eslint-disable-next-line ts/no-explicit-any
     data.forEach((v: any) => {
-      v.level = level
+      v.level = level;
 
-      const current_indexes = [...total, index++]
+      const current_indexes = [...total, index++];
 
-      rowsKeyIndexMap.value[v.id] = current_indexes
-      if (v.children)
-        buildIndexMap(v.children, level + 1, 0, current_indexes)
-    })
+      rowsKeyIndexMap.value[v.id] = current_indexes;
+      if (v.children) buildIndexMap(v.children, level + 1, 0, current_indexes);
+    });
   }
 }
 
 async function _get_list(page_num: number | null = null, page_size = 20) {
-  dataSource.value = []
-  loading.value = true
+  dataSource.value = [];
+  loading.value = true;
   if (page_num) {
-    params.page = page_num
-    params.page_size = page_size
+    params.page = page_num;
+    params.page_size = page_size;
+  } else {
+    params.page = 1;
+    params.page_size = page_size;
   }
-  else {
-    params.page = 1
-    params.page_size = page_size
-  }
-  props.api?.get_list({ ...params, ...props.overwriteParams }).then(async r => {
-    dataSource.value = r.data
-    rowsKeyIndexMap.value = {}
-    if (props.sortable)
-      buildIndexMap(r.data)
+  props.api
+    ?.get_list({ ...params, ...props.overwriteParams })
+    .then(async (r) => {
+      dataSource.value = r.data;
+      rowsKeyIndexMap.value = {};
+      if (props.sortable) buildIndexMap(r.data);
 
-    if (r.pagination)
-      Object.assign(pagination, r.pagination)
+      if (r.pagination) Object.assign(pagination, r.pagination);
 
-    loading.value = false
-  }).catch(e => {
-    message.error(e?.message ?? $gettext('Server error'))
-  })
+      loading.value = false;
+    })
+    .catch((e) => {
+      message.error(e?.message ?? $gettext("Server error"));
+    });
 }
 
 // eslint-disable-next-line ts/no-explicit-any
 function onTableChange(_pagination: TablePaginationConfig, filters: Record<string, FilterValue>, sorter: SorterResult | SorterResult<any>[]) {
   if (sorter) {
-    sorter = sorter as SorterResult
-    selectedRowKeys.value = []
-    params.sort_by = sorter.field
-    params.order = sorter.order === 'ascend' ? 'asc' : 'desc'
+    sorter = sorter as SorterResult;
+    selectedRowKeys.value = [];
+    params.sort_by = sorter.field;
+    params.order = sorter.order === "ascend" ? "asc" : "desc";
     switch (sorter.order) {
-      case 'ascend':
-        params.sort = 'asc'
-        break
-      case 'descend':
-        params.sort = 'desc'
-        break
+      case "ascend":
+        params.sort = "asc";
+        break;
+      case "descend":
+        params.sort = "desc";
+        break;
       default:
-        params.sort = null
-        break
+        params.sort = null;
+        break;
     }
   }
   if (filters) {
     Object.keys(filters).forEach((v: string) => {
-      params[v] = filters[v]
-    })
+      params[v] = filters[v];
+    });
   }
 
-  if (_pagination)
-    selectedRowKeys.value = []
+  if (_pagination) selectedRowKeys.value = [];
 }
 
 function expandedTable(keys: Key[]) {
-  expandKeysList.value = keys
+  expandKeysList.value = keys;
 }
 
 // eslint-disable-next-line ts/no-explicit-any
 async function onSelect(record: any, selected: boolean, _selectedRows: any[]) {
   // console.log('onSelect', record, selected, _selectedRows)
-  if (props.selectionType === 'checkbox' || batchColumns.value.length > 0 || props.exportExcel) {
+  if (props.selectionType === "checkbox" || batchColumns.value.length > 0 || props.exportExcel) {
     if (selected) {
-      _selectedRows.forEach(v => {
+      _selectedRows.forEach((v) => {
         if (v) {
-          if (selectedRecords.value[v[props.rowKey]] === undefined)
-            selectedRowKeys.value.push(v[props.rowKey])
+          if (selectedRecords.value[v[props.rowKey]] === undefined) selectedRowKeys.value.push(v[props.rowKey]);
 
-          selectedRecords.value[v[props.rowKey]] = v
+          selectedRecords.value[v[props.rowKey]] = v;
         }
-      })
+      });
+    } else {
+      selectedRowKeys.value.splice(selectedRowKeys.value.indexOf(record[props.rowKey]), 1);
+      delete selectedRecords.value[record[props.rowKey]];
     }
-    else {
-      selectedRowKeys.value.splice(selectedRowKeys.value.indexOf(record[props.rowKey]), 1)
-      delete selectedRecords.value[record[props.rowKey]]
-    }
-    await nextTick()
-    selectedRows.value = [...selectedRowKeys.value.map(v => selectedRecords.value[v])]
-  }
-  else if (selected) {
-    selectedRowKeys.value = record[props.rowKey]
-    selectedRows.value = [record]
-  }
-  else {
-    selectedRowKeys.value = []
-    selectedRows.value = []
+    await nextTick();
+    selectedRows.value = [...selectedRowKeys.value.map((v) => selectedRecords.value[v])];
+  } else if (selected) {
+    selectedRowKeys.value = record[props.rowKey];
+    selectedRows.value = [record];
+  } else {
+    selectedRowKeys.value = [];
+    selectedRows.value = [];
   }
 }
 
@@ -321,90 +314,94 @@ async function onSelectAll(selected: boolean, _selectedRows: any[], changeRows: 
   changeRows.forEach((v: any) => {
     if (v) {
       if (selected) {
-        selectedRowKeys.value.push(v[props.rowKey])
-        selectedRecords.value[v[props.rowKey]] = v
-      }
-      else {
-        delete selectedRecords.value[v[props.rowKey]]
+        selectedRowKeys.value.push(v[props.rowKey]);
+        selectedRecords.value[v[props.rowKey]] = v;
+      } else {
+        delete selectedRecords.value[v[props.rowKey]];
       }
     }
-  })
+  });
 
   if (!selected) {
-    selectedRowKeys.value.splice(0, selectedRowKeys.value.length, ...selectedRowKeys.value.filter(v => selectedRecords.value[v]))
+    selectedRowKeys.value.splice(0, selectedRowKeys.value.length, ...selectedRowKeys.value.filter((v) => selectedRecords.value[v]));
   }
 
   // console.log(selectedRowKeysBuffer.value, selectedRecords.value)
 
-  await nextTick()
-  selectedRows.value.splice(0, selectedRows.value.length, ...selectedRowKeys.value.map(v => selectedRecords.value[v]))
+  await nextTick();
+  selectedRows.value.splice(0, selectedRows.value.length, ...selectedRowKeys.value.map((v) => selectedRecords.value[v]));
 }
 
 function resetSelection() {
-  selectedRowKeys.value = reactive([])
-  selectedRows.value = reactive([])
-  selectedRecords.value = reactive({})
+  selectedRowKeys.value = reactive([]);
+  selectedRows.value = reactive([]);
+  selectedRecords.value = reactive({});
 }
 
-const router = useRouter()
+const router = useRouter();
 
 async function resetSearch() {
-  Object.keys(params).forEach(v => {
-    delete params[v]
-  })
+  Object.keys(params).forEach((v) => {
+    delete params[v];
+  });
 
   Object.assign(params, {
     ...props.getParams,
-  })
+  });
 
-  router.push({ query: {} }).catch(() => {
-  })
+  router.push({ query: {} }).catch(() => {});
 
-  Object.keys(filterParams).forEach(v => {
-    delete filterParams[v]
-  })
+  Object.keys(filterParams).forEach((v) => {
+    delete filterParams[v];
+  });
 
-  updateFilter.value++
+  updateFilter.value++;
 }
 
-const { stop: stopWatchParams, resume: resumeWatchParams } = watchPausable(params, v => {
-  if (!init.value)
-    return
+const { stop: stopWatchParams, resume: resumeWatchParams } = watchPausable(params, (v) => {
+  if (!init.value) return;
 
-  if (!props.disableQueryParams)
-    router.push({ query: { ...v as RouteParams } })
-  else
-    get_list()
-})
+  if (!props.disableQueryParams) router.push({ query: { ...(v as RouteParams) } });
+  else get_list();
+});
 
-watch(() => route.query, async () => {
-  params.trash = route.query.trash === 'true'
+watch(
+  () => route.query,
+  async () => {
+    params.trash = route.query.trash === "true";
 
-  if (init.value)
-    await get_list()
-})
+    if (init.value) await get_list();
+  }
+);
 
 if (props.getParams) {
-  const getParams = computed(() => props.getParams)
+  const getParams = computed(() => props.getParams);
 
-  watch(getParams, () => {
-    Object.assign(params, {
-      ...props.getParams,
-      page: 1,
-    })
-  }, { deep: true })
+  watch(
+    getParams,
+    () => {
+      Object.assign(params, {
+        ...props.getParams,
+        page: 1,
+      });
+    },
+    { deep: true }
+  );
 }
 
 if (props.overwriteParams) {
-  const overwriteParams = computed(() => props.overwriteParams)
+  const overwriteParams = computed(() => props.overwriteParams);
 
-  watch(overwriteParams, () => {
-    Object.assign(params, {
-      page: 1,
-    })
-    if (params.page === 1)
-      get_list()
-  }, { deep: true })
+  watch(
+    overwriteParams,
+    () => {
+      Object.assign(params, {
+        page: 1,
+      });
+      if (params.page === 1) get_list();
+    },
+    { deep: true }
+  );
 }
 
 const rowSelection = computed(() => {
@@ -414,42 +411,39 @@ const rowSelection = computed(() => {
       onSelect,
       onSelectAll,
       getCheckboxProps: props?.getCheckboxProps,
-      type: (batchColumns.value.length > 0 || props.exportExcel) ? 'checkbox' : props.selectionType,
-    }
+      type: batchColumns.value.length > 0 || props.exportExcel ? "checkbox" : props.selectionType,
+    };
+  } else {
+    return null;
   }
-  else {
-    return null
-  }
-}) as ComputedRef<TableProps['rowSelection']>
+}) as ComputedRef<TableProps["rowSelection"]>;
 
 const hasSelectedRow = computed(() => {
-  return batchColumns.value.length > 0 && selectedRowKeys.value.length > 0
-})
+  return batchColumns.value.length > 0 && selectedRowKeys.value.length > 0;
+});
 
 function clickBatchEdit() {
-  emit('clickBatchModify', batchColumns.value, selectedRowKeys.value, selectedRows.value)
+  emit("clickBatchModify", batchColumns.value, selectedRowKeys.value, selectedRows.value);
 }
 
 function initSortable() {
-  useSortable(props, randomId, dataSource, rowsKeyIndexMap, expandKeysList)
+  useSortable(props, randomId, dataSource, rowsKeyIndexMap, expandKeysList);
 }
 
 async function changePage(page: number, page_size: number) {
-  stopWatchParams()
+  stopWatchParams();
   Object.assign(params, {
     page,
     page_size,
-  })
-  resumeWatchParams()
-  await get_list(page, page_size)
+  });
+  resumeWatchParams();
+  await get_list(page, page_size);
 }
 
 const paginationSize = computed(() => {
-  if (props.size === 'small')
-    return 'small'
-  else
-    return 'default'
-})
+  if (props.size === "small") return "small";
+  else return "default";
+});
 </script>
 
 <template>
@@ -465,13 +459,10 @@ const paginationSize = computed(() => {
       <template #action>
         <ASpace class="action-btn">
           <AButton @click="resetSearch">
-            {{ $gettext('Reset') }}
+            {{ $gettext("Reset") }}
           </AButton>
-          <AButton
-            v-if="hasSelectedRow"
-            @click="clickBatchEdit"
-          >
-            {{ $gettext('Batch Modify') }}
+          <AButton v-if="hasSelectedRow" @click="clickBatchEdit">
+            {{ $gettext("Batch Modify") }}
           </AButton>
           <slot name="append-search" />
         </ASpace>
@@ -491,41 +482,27 @@ const paginationSize = computed(() => {
       @change="onTableChange"
       @expanded-rows-change="expandedTable"
     >
-      <template #bodyCell="{ text, record, column }: {text: any, record: Record<string, any>, column: any}">
+      <template #bodyCell="{ text, record, column }: { text: any, record: Record<string, any>, column: any }">
         <template v-if="column.handle === true">
           <span class="ant-table-drag-icon"><HolderOutlined /></span>
           {{ text }}
         </template>
         <template v-if="column.dataIndex === 'action'">
           <template v-if="!props.disableView && !params.trash">
-            <AButton
-              type="link"
-              size="small"
-              @click="$emit('clickView', record[props.rowKey], record)"
-            >
-              {{ $gettext('View') }}
+            <AButton type="link" size="small" @click="$emit('clickView', record[props.rowKey], record)">
+              {{ $gettext("View") }}
             </AButton>
-            <ADivider
-              v-if="!props.disableModify"
-              type="vertical"
-            />
+            <ADivider v-if="!props.disableModify" type="vertical" />
           </template>
 
           <template v-if="!props.disableModify && !params.trash">
-            <AButton
-              type="link"
-              size="small"
-              @click="$emit('clickEdit', record[props.rowKey], record)"
-            >
-              {{ $gettext('Modify') }}
+            <AButton type="link" size="small" @click="$emit('clickEdit', record[props.rowKey], record)">
+              {{ $gettext("Modify") }}
             </AButton>
             <ADivider type="vertical" />
           </template>
 
-          <slot
-            name="actions"
-            :record="record"
-          />
+          <slot name="actions" :record="record" />
 
           <template v-if="!props.disableDelete">
             <APopconfirm
@@ -535,11 +512,8 @@ const paginationSize = computed(() => {
               :title="$gettext('Are you sure you want to delete this item?')"
               @confirm="destroy(record[rowKey])"
             >
-              <AButton
-                type="link"
-                size="small"
-              >
-                {{ $gettext('Delete') }}
+              <AButton type="link" size="small">
+                {{ $gettext("Delete") }}
               </AButton>
             </APopconfirm>
             <APopconfirm
@@ -549,11 +523,8 @@ const paginationSize = computed(() => {
               :title="$gettext('Are you sure you want to recover this item?')"
               @confirm="recover(record[rowKey])"
             >
-              <AButton
-                type="link"
-                size="small"
-              >
-                {{ $gettext('Recover') }}
+              <AButton type="link" size="small">
+                {{ $gettext("Recover") }}
               </AButton>
             </APopconfirm>
             <ADivider type="vertical" />
@@ -564,24 +535,15 @@ const paginationSize = computed(() => {
               :title="$gettext('Are you sure you want to delete this item permanently?')"
               @confirm="destroy(record[rowKey])"
             >
-              <AButton
-                type="link"
-                size="small"
-              >
-                {{ $gettext('Delete Permanently') }}
+              <AButton type="link" size="small">
+                {{ $gettext("Delete Permanently") }}
               </AButton>
             </APopconfirm>
           </template>
         </template>
       </template>
     </ATable>
-    <StdPagination
-      :size="paginationSize"
-      :loading="loading"
-      :pagination="pagination"
-      @change="changePage"
-      @change-page-size="onTableChange"
-    />
+    <StdPagination :size="paginationSize" :loading="loading" :pagination="pagination" @change="changePage" @change-page-size="onTableChange" />
   </div>
 </template>
 
@@ -633,7 +595,8 @@ const paginationSize = computed(() => {
   cursor: grab;
 }
 
-.sortable-ghost *, .sortable-chosen * {
+.sortable-ghost *,
+.sortable-chosen * {
   cursor: grabbing !important;
 }
 </style>

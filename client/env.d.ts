@@ -1,4 +1,3 @@
-import { Router } from "vue-router";
 declare module "*.svg" {
   import type React from "react";
 
@@ -11,21 +10,24 @@ declare const process: {
     VITE_API_ROOT: string;
   };
 };
+
 declare module "*.png" {
   const value: string;
   export default value;
 }
+j;
 declare module "*.webp" {
   const value: string;
   export default value;
 }
+
 declare module "*.jpg" {
   const value: string;
   export default value;
 }
 
-declare module "vue" {
-  interface ComponentCustomProperties {
-    $router: Router;
-  }
-}
+// declare module "vue" {
+//   interface ComponentCustomProperties {
+//     $router: Router;
+//   }
+// }
