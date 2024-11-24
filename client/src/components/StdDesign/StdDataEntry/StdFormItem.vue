@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import type { Column } from '@/components/StdDesign/types'
-import type { Rule } from 'ant-design-vue/es/form'
-import FormErrors from '@/constants/form_errors'
+import type { Column } from "@/components/StdDesign/types";
+import type { Rule } from "ant-design-vue/es/form";
+import FormErrors from "@/constants/form_errors";
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 export interface Props {
-  dataIndex?: Column['dataIndex']
-  label?: string
-  extra?: string
-  hint?: string | (() => string)
+  dataIndex?: Column["dataIndex"];
+  label?: string;
+  extra?: string;
+  hint?: string | (() => string);
   error?: {
-    [key: string]: string
-  }
-  required?: boolean
-  noValidate?: boolean
+    [key: string]: string;
+  };
+  required?: boolean;
+  noValidate?: boolean;
 }
 
 const tag = computed(() => {
-  return props.error?.[props.dataIndex!.toString()] ?? ''
-})
+  return props.error?.[props.dataIndex!.toString()] ?? "";
+});
 
 // const valid_status = computed(() => {
 //   if (tag.value)
@@ -28,27 +28,26 @@ const tag = computed(() => {
 // })
 
 const help = computed(() => {
-  const rules = tag.value.split(',')
+  const rules = tag.value.split(",");
 
   for (const rule of rules) {
-    if (FormErrors[rule])
-      return FormErrors[rule]()
+    if (FormErrors[rule as keyof typeof FormErrors]) return FormErrors[rule as keyof typeof FormErrors]();
   }
 
-  return props.hint
-})
+  return props.hint;
+});
 
 // eslint-disable-next-line ts/no-explicit-any
 async function validator(_: Rule, value: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    if (props.required && !props.noValidate && (!value && value !== 0)) {
-      reject(help.value ?? $gettext('This field should not be empty'))
+    if (props.required && !props.noValidate && !value && value !== 0) {
+      reject(help.value ?? $gettext("This field should not be empty"));
 
-      return
+      return;
     }
 
-    resolve(true)
-  })
+    resolve(true);
+  });
 }
 </script>
 
@@ -65,5 +64,4 @@ async function validator(_: Rule, value: any): Promise<any> {
   </AFormItem>
 </template>
 
-<style scoped lang="less">
-</style>
+<style scoped lang="less"></style>

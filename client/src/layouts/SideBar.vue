@@ -8,6 +8,7 @@ import Logo from "@/components/Logo/Logo.vue";
 import { routes } from "@/routes";
 
 const route = useRoute();
+const router = useRouter();
 
 const openKeys = ref([openSub()]);
 
@@ -91,7 +92,7 @@ const visible: ComputedRef<Sidebar[]> = computed(() => {
       <EnvIndicator />
 
       <template v-for="s in visible">
-        <AMenuItem v-if="s.children.length === 0 || s.meta.hideChildren" :key="s.name" @click="$router.push(`/${s.path}`).catch(() => {})">
+        <AMenuItem v-if="s.children.length === 0 || s.meta.hideChildren" :key="s.name" @click="router.push(`/${s.path}`).catch(() => {})">
           <Component :is="s.meta.icon as IconComponentProps" />
           <span>{{ s.meta?.name() }}</span>
         </AMenuItem>

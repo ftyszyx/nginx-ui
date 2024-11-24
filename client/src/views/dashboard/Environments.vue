@@ -1,159 +1,128 @@
 <script setup lang="ts">
-import type { Node } from '@/api/environment'
-import type ReconnectingWebSocket from 'reconnecting-websocket'
-import type { Ref } from 'vue'
-import analytic from '@/api/analytic'
-import environment from '@/api/environment'
-import logo from '@/assets/img/logo.png'
-import pulse from '@/assets/svg/pulse.svg?component'
-import { formatDateTime } from '@/lib/helper'
-import { useSettingsStore } from '@/pinia'
-import { version } from '@/version.json'
-import NodeAnalyticItem from '@/views/dashboard/components/NodeAnalyticItem.vue'
-import Icon, { LinkOutlined, SendOutlined, ThunderboltOutlined } from '@ant-design/icons-vue'
+import type { Node } from "@/api/environment";
+import type ReconnectingWebSocket from "reconnecting-websocket";
+import type { Ref } from "vue";
+import analytic from "@/api/analytic";
+import environment from "@/api/environment";
+import logo from "@/assets/img/logo.png";
+import pulse from "@/assets/svg/pulse.svg";
+import { formatDateTime } from "@/lib/helper";
+import { useSettingsStore } from "@/pinia";
+import { version } from "@/version.json";
+import NodeAnalyticItem from "@/views/dashboard/components/NodeAnalyticItem.vue";
+import Icon, { LinkOutlined, SendOutlined, ThunderboltOutlined } from "@ant-design/icons-vue";
 
-const data = ref([]) as Ref<Node[]>
+const data = ref([]) as Ref<Node[]>;
 
 const nodeMap = computed(() => {
-  const o = {} as Record<number, Node>
+  const o = {} as Record<number, Node>;
 
-  data.value.forEach(v => {
-    o[v.id] = v
-  })
+  data.value.forEach((v) => {
+    o[v.id] = v;
+  });
 
-  return o
-})
+  return o;
+});
 
-let websocket: ReconnectingWebSocket | WebSocket
+let websocket: ReconnectingWebSocket | WebSocket;
 
 onMounted(async () => {
-  let hasMore = true
-  let page = 1
+  let hasMore = true;
+  let page = 1;
   while (hasMore) {
-    await environment.get_list({ page, enabled: true }).then(r => {
-      data.value.push(...r.data)
-      hasMore = r.data.length === r.pagination?.per_page
-      page++
-    }).catch(() => {
-      hasMore = false
-    })
+    await environment
+      .get_list({ page, enabled: true })
+      .then((r) => {
+        data.value.push(...r.data);
+        hasMore = r.data.length === r.pagination?.per_page;
+        page++;
+      })
+      .catch(() => {
+        hasMore = false;
+      });
   }
-})
+});
 
 onMounted(() => {
-  websocket = analytic.nodes()
-  websocket.onmessage = async m => {
-    const nodes = JSON.parse(m.data)
+  websocket = analytic.nodes();
+  websocket.onmessage = async (m) => {
+    const nodes = JSON.parse(m.data);
 
     Object.keys(nodes).forEach((v: string) => {
-      const key = Number.parseInt(v)
+      const key = Number.parseInt(v);
 
       // update node online status
       if (nodeMap.value[key]) {
-        Object.assign(nodeMap.value[key], nodes[key])
-        nodeMap.value[key].response_at = new Date()
+        Object.assign(nodeMap.value[key], nodes[key]);
+        nodeMap.value[key].response_at = new Date();
       }
-    })
-  }
-})
+    });
+  };
+});
 
 onUnmounted(() => {
-  websocket.close()
-})
+  websocket.close();
+});
 
-const { environment: env } = useSettingsStore()
+const { environment: env } = useSettingsStore();
 
 function linkStart(node: Node) {
-  env.id = node.id
-  env.name = node.name
+  env.id = node.id;
+  env.name = node.name;
 }
 
 const visible = computed(() => {
-  if (env.id > 0)
-    return false
-  else
-    return data.value?.length
-})
+  if (env.id > 0) return false;
+  else return data.value?.length;
+});
 </script>
 
 <template>
-  <ACard
-    v-if="visible"
-    class="env-list-card"
-    :title="$gettext('Environments')"
-  >
-    <AList
-      item-layout="horizontal"
-      :data-source="data"
-    >
+  <ACard v-if="visible" class="env-list-card" :title="$gettext('Environments')">
+    <AList item-layout="horizontal" :data-source="data">
       <template #renderItem="{ item }">
         <AListItem>
           <AListItemMeta>
             <template #title>
               <div class="mb-1">
                 {{ item.name }}
-                <ATag
-                  v-if="item.status"
-                  color="blue"
-                  class="ml-2"
-                >
-                  {{ $gettext('Online') }}
+                <ATag v-if="item.status" color="blue" class="ml-2">
+                  {{ $gettext("Online") }}
                 </ATag>
-                <ATag
-                  v-else
-                  color="error"
-                  class="ml-2"
-                >
-                  {{ $gettext('Offline') }}
+                <ATag v-else color="error" class="ml-2">
+                  {{ $gettext("Offline") }}
                 </ATag>
               </div>
 
               <template v-if="item.status">
-                <div class="runtime-meta mr-2 mb-1">
-                  <Icon :component="pulse" /> {{ formatDateTime(item.response_at) }}
-                </div>
-                <div class="runtime-meta mr-2 mb-1">
-                  <ThunderboltOutlined />{{ item.version }}
-                </div>
+                <div class="runtime-meta mr-2 mb-1"><Icon :component="pulse" /> {{ formatDateTime(item.response_at) }}</div>
+                <div class="runtime-meta mr-2 mb-1"><ThunderboltOutlined />{{ item.version }}</div>
               </template>
-              <div class="runtime-meta">
-                <LinkOutlined />{{ item.url }}
-              </div>
+              <div class="runtime-meta"><LinkOutlined />{{ item.url }}</div>
             </template>
             <template #avatar>
               <AAvatar :src="logo" />
             </template>
             <template #description>
               <div class="md:flex lg:flex justify-between md:items-center">
-                <NodeAnalyticItem
-                  :item="item"
-                  class="mt-1 mb-1"
-                />
+                <NodeAnalyticItem :item="item" class="mt-1 mb-1" />
 
-                <AButton
-                  v-if="item.version === version"
-                  type="primary"
-                  :disabled="!item.status || env.id === item.id"
-                  ghost
-                  @click="linkStart(item)"
-                >
+                <AButton v-if="item.version === version" type="primary" :disabled="!item.status || env.id === item.id" ghost @click="linkStart(item)">
                   <SendOutlined />
-                  {{ env.id !== item.id ? $gettext('Link Start') : $gettext('Connected') }}
+                  {{ env.id !== item.id ? $gettext("Link Start") : $gettext("Connected") }}
                 </AButton>
-                <ATooltip
-                  v-else
-                  placement="topLeft"
-                >
+                <ATooltip v-else placement="topLeft">
                   <template #title>
-                    {{ $gettext('The remote Nginx UI version is not compatible with the local Nginx UI version. '
-                      + 'To avoid potential errors, please upgrade the remote Nginx UI to match the local version.') }}
+                    {{
+                      $gettext(
+                        "The remote Nginx UI version is not compatible with the local Nginx UI version. " +
+                          "To avoid potential errors, please upgrade the remote Nginx UI to match the local version."
+                      )
+                    }}
                   </template>
-                  <AButton
-                    ghost
-                    disabled
-                  >
+                  <AButton ghost disabled>
                     <SendOutlined />
-                    {{ $gettext('Link Start') }}
+                    {{ $gettext("Link Start") }}
                   </AButton>
                 </ATooltip>
               </div>
@@ -192,7 +161,7 @@ const visible = computed(() => {
 }
 
 :deep(.ant-list-item-action) {
-  @media(max-width: 500px) {
+  @media (max-width: 500px) {
     display: none;
   }
 }

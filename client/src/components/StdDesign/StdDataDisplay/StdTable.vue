@@ -107,7 +107,7 @@ const params = reactive({
 });
 
 onMounted(() => {
-  selectedRows.value.forEach((v) => {
+  selectedRows.value.forEach((v: any) => {
     selectedRecords.value[v[props.rowKey]] = v;
   });
 });
@@ -148,7 +148,7 @@ const get_list = _.debounce(_get_list, 100, {
   trailing: false,
 });
 
-const filterParams = reactive({});
+const filterParams: Record<string, any> = reactive({});
 
 watch(filterParams, () => {
   Object.assign(params, {
@@ -351,7 +351,7 @@ async function resetSearch() {
 
   router.push({ query: {} }).catch(() => {});
 
-  Object.keys(filterParams).forEach((v) => {
+  Object.keys(filterParams).forEach((v: string) => {
     delete filterParams[v];
   });
 
