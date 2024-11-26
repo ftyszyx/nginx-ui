@@ -5,10 +5,10 @@ import stream from "@/api/stream";
 import StdTable from "@/components/StdDesign/StdDataDisplay/StdTable.vue";
 import { datetime } from "@/components/StdDesign/StdDataDisplay/StdTableTransformer";
 import { input } from "@/components/StdDesign/StdDataEntry";
-import gettext from "@/gettext";
 import InspectConfig from "@/views/config/InspectConfig.vue";
 import StreamDuplicate from "@/views/stream/components/StreamDuplicate.vue";
 import { Badge, message } from "ant-design-vue";
+const router = useRouter();
 
 const columns: Column[] = [
   {
@@ -149,7 +149,7 @@ function handleAddStream() {
       disable-view
       @click-edit="
         (r: any) =>
-          $router.push({
+          router.push({
             path: `/stream/${r}`,
           })
       "

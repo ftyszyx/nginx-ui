@@ -1,264 +1,224 @@
 <script setup lang="ts">
-import type { NgxConfig } from '@/api/ngx'
-import type { ChatComplicationMessage } from '@/api/openai'
-import type { Stream } from '@/api/stream'
-import type { CheckedType } from '@/types'
+import type { NgxConfig } from "@/api/ngx";
+import type { ChatComplicationMessage } from "@/api/openai";
+import type { Stream } from "@/api/stream";
+import type { CheckedType } from "@/types";
 
-import type { Ref } from 'vue'
-import config from '@/api/config'
-import ngx from '@/api/ngx'
-import stream from '@/api/stream'
-import CodeEditor from '@/components/CodeEditor/CodeEditor.vue'
-import FooterToolBar from '@/components/FooterToolbar/FooterToolBar.vue'
-import NgxConfigEditor from '@/views/site/ngx_conf/NgxConfigEditor.vue'
-import RightSettings from '@/views/stream/components/RightSettings.vue'
-import { message } from 'ant-design-vue'
+import type { Ref } from "vue";
+import config from "@/api/config";
+import ngx from "@/api/ngx";
+import stream from "@/api/stream";
+import CodeEditor from "@/components/CodeEditor/CodeEditor.vue";
+import FooterToolBar from "@/components/FooterToolbar/FooterToolBar.vue";
+import NgxConfigEditor from "@/views/site/ngx_conf/NgxConfigEditor.vue";
+import RightSettings from "@/views/stream/components/RightSettings.vue";
+import { message } from "ant-design-vue";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-const name = ref(route.params.name.toString())
+const name = ref(route.params.name.toString());
 
 watch(route, () => {
-  name.value = route.params?.name?.toString() ?? ''
-})
+  name.value = route.params?.name?.toString() ?? "";
+});
 
 const ngx_config: NgxConfig = reactive({
-  name: '',
+  name: "",
   upstreams: [],
   servers: [],
-})
+});
 
-const enabled = ref(false)
-const configText = ref('')
-const advance_mode_ref = ref(false)
-const saving = ref(false)
-const filename = ref('')
-const filepath = ref('')
-const parse_error_status = ref(false)
-const parse_error_message = ref('')
-const data = ref({})
+const enabled = ref(false);
+const configText = ref("");
+const advance_mode_ref = ref(false);
+const saving = ref(false);
+const filename = ref("");
+const filepath = ref("");
+const parse_error_status = ref(false);
+const parse_error_message = ref("");
+const data = ref({});
 
-init()
+init();
 
 const advance_mode = computed({
   get() {
-    return advance_mode_ref.value || parse_error_status.value
+    return advance_mode_ref.value || parse_error_status.value;
   },
   set(v: boolean) {
-    advance_mode_ref.value = v
+    advance_mode_ref.value = v;
   },
-})
+});
 
-const history_chatgpt_record = ref([]) as Ref<ChatComplicationMessage[]>
+const history_chatgpt_record = ref([]) as Ref<ChatComplicationMessage[]>;
 
 function handle_response(r: Stream) {
-  if (r.advanced)
-    advance_mode.value = true
+  if (r.advanced) advance_mode.value = true;
 
-  if (r.advanced)
-    advance_mode.value = true
+  if (r.advanced) advance_mode.value = true;
 
-  parse_error_status.value = false
-  parse_error_message.value = ''
-  filename.value = r.name
-  filepath.value = r.filepath
-  configText.value = r.config
-  enabled.value = r.enabled
-  history_chatgpt_record.value = r.chatgpt_messages
-  data.value = r
-  Object.assign(ngx_config, r.tokenized)
+  parse_error_status.value = false;
+  parse_error_message.value = "";
+  filename.value = r.name;
+  filepath.value = r.filepath;
+  configText.value = r.config;
+  enabled.value = r.enabled;
+  history_chatgpt_record.value = r.chatgpt_messages;
+  data.value = r;
+  Object.assign(ngx_config, r.tokenized);
 }
 
 function init() {
   if (name.value) {
-    stream.get(name.value).then(r => {
-      handle_response(r)
-    }).catch(handle_parse_error)
-  }
-  else {
-    history_chatgpt_record.value = []
+    stream
+      .get(name.value)
+      .then((r) => {
+        handle_response(r);
+      })
+      .catch(handle_parse_error);
+  } else {
+    history_chatgpt_record.value = [];
   }
 }
 
-function handle_parse_error(e: { error?: string, message: string }) {
-  console.error(e)
-  parse_error_status.value = true
-  parse_error_message.value = e.message
-  config.get(`streams-available/${name.value}`).then(r => {
-    configText.value = r.content
-  })
+function handle_parse_error(e: { error?: string; message: string }) {
+  console.error(e);
+  parse_error_status.value = true;
+  parse_error_message.value = e.message;
+  config.get(`streams-available/${name.value}`).then((r) => {
+    configText.value = r.content;
+  });
 }
 
 function on_mode_change(advanced: CheckedType) {
   stream.advance_mode(name.value, { advanced: advanced as boolean }).then(() => {
-    advance_mode.value = advanced as boolean
+    advance_mode.value = advanced as boolean;
     if (advanced) {
-      build_config()
+      build_config();
+    } else {
+      return ngx
+        .tokenize_config(configText.value)
+        .then((r) => {
+          Object.assign(ngx_config, r);
+        })
+        .catch(handle_parse_error);
     }
-    else {
-      return ngx.tokenize_config(configText.value).then(r => {
-        Object.assign(ngx_config, r)
-      }).catch(handle_parse_error)
-    }
-  })
+  });
 }
 
 async function build_config() {
-  return ngx.build_config(ngx_config).then(r => {
-    configText.value = r.content
-  })
+  return ngx.build_config(ngx_config).then((r) => {
+    configText.value = r.content;
+  });
 }
 
 async function save() {
-  saving.value = true
+  saving.value = true;
 
   if (!advance_mode.value) {
     try {
-      await build_config()
-    }
-    catch {
-      saving.value = false
-      message.error($gettext('Failed to save, syntax error(s) was detected in the configuration.'))
+      await build_config();
+    } catch {
+      saving.value = false;
+      message.error($gettext("Failed to save, syntax error(s) was detected in the configuration."));
 
-      return
+      return;
     }
   }
 
-  return stream.save(name.value, {
-    name: filename.value || name.value,
-    content: configText.value,
-    overwrite: true,
-  }).then(r => {
-    handle_response(r)
-    router.push({
-      path: `/stream/${filename.value}`,
-      query: route.query,
+  return stream
+    .save(name.value, {
+      name: filename.value || name.value,
+      content: configText.value,
+      overwrite: true,
     })
-    message.success($gettext('Saved successfully'))
-  }).catch(handle_parse_error).finally(() => {
-    saving.value = false
-  })
+    .then((r) => {
+      handle_response(r);
+      router.push({
+        path: `/stream/${filename.value}`,
+        query: route.query,
+      });
+      message.success($gettext("Saved successfully"));
+    })
+    .catch(handle_parse_error)
+    .finally(() => {
+      saving.value = false;
+    });
 }
 
-provide('save_config', save)
-provide('configText', configText)
-provide('ngx_config', ngx_config)
-provide('history_chatgpt_record', history_chatgpt_record)
-provide('enabled', enabled)
-provide('name', name)
-provide('filename', filename)
-provide('filepath', filepath)
-provide('data', data)
+provide("save_config", save);
+provide("configText", configText);
+provide("ngx_config", ngx_config);
+provide("history_chatgpt_record", history_chatgpt_record);
+provide("enabled", enabled);
+provide("name", name);
+provide("filename", filename);
+provide("filepath", filepath);
+provide("data", data);
 </script>
 
 <template>
   <ARow :gutter="16">
-    <ACol
-      :xs="24"
-      :sm="24"
-      :md="18"
-    >
+    <ACol :xs="24" :sm="24" :md="18">
       <ACard :bordered="false">
         <template #title>
-          <span style="margin-right: 10px">{{ $gettext('Edit %{n}', { n: name }) }}</span>
-          <ATag
-            v-if="enabled"
-            color="blue"
-          >
-            {{ $gettext('Enabled') }}
+          <span style="margin-right: 10px">{{ $gettext("Edit %{n}", { n: name }) }}</span>
+          <ATag v-if="enabled" color="blue">
+            {{ $gettext("Enabled") }}
           </ATag>
-          <ATag
-            v-else
-            color="orange"
-          >
-            {{ $gettext('Disabled') }}
+          <ATag v-else color="orange">
+            {{ $gettext("Disabled") }}
           </ATag>
         </template>
         <template #extra>
           <div class="mode-switch">
             <div class="switch">
-              <ASwitch
-                size="small"
-                :disabled="parse_error_status"
-                :checked="advance_mode"
-                @change="on_mode_change"
-              />
+              <ASwitch size="small" :disabled="parse_error_status" :checked="advance_mode" @change="on_mode_change" />
             </div>
             <template v-if="advance_mode">
-              <div>{{ $gettext('Advance Mode') }}</div>
+              <div>{{ $gettext("Advance Mode") }}</div>
             </template>
             <template v-else>
-              <div>{{ $gettext('Basic Mode') }}</div>
+              <div>{{ $gettext("Basic Mode") }}</div>
             </template>
           </div>
         </template>
 
         <Transition name="slide-fade">
-          <div
-            v-if="advance_mode"
-            key="advance"
-          >
-            <div
-              v-if="parse_error_status"
-              class="parse-error-alert-wrapper"
-            >
-              <AAlert
-                :message="$gettext('Nginx Configuration Parse Error')"
-                :description="parse_error_message"
-                type="error"
-                show-icon
-              />
+          <div v-if="advance_mode" key="advance">
+            <div v-if="parse_error_status" class="parse-error-alert-wrapper">
+              <AAlert :message="$gettext('Nginx Configuration Parse Error')" :description="parse_error_message" type="error" show-icon />
             </div>
             <div>
               <CodeEditor v-model:content="configText" />
             </div>
           </div>
 
-          <div
-            v-else
-            key="basic"
-            class="domain-edit-container"
-          >
-            <NgxConfigEditor
-              :enabled="enabled"
-              context="stream"
-              @callback="save"
-            />
+          <div v-else key="basic" class="domain-edit-container">
+            <NgxConfigEditor :enabled="enabled" context="stream" @callback="save" />
           </div>
         </Transition>
       </ACard>
     </ACol>
 
-    <ACol
-      class="col-right"
-      :xs="24"
-      :sm="24"
-      :md="6"
-    >
+    <ACol class="col-right" :xs="24" :sm="24" :md="6">
       <RightSettings />
     </ACol>
 
     <FooterToolBar>
       <ASpace>
-        <AButton @click="$router.push('/streams')">
-          {{ $gettext('Back') }}
+        <AButton @click="router.push('/streams')">
+          {{ $gettext("Back") }}
         </AButton>
-        <AButton
-          type="primary"
-          :loading="saving"
-          @click="save"
-        >
-          {{ $gettext('Save') }}
+        <AButton type="primary" :loading="saving" @click="save">
+          {{ $gettext("Save") }}
         </AButton>
       </ASpace>
     </FooterToolBar>
   </ARow>
 </template>
 
-<style lang="less">
-
-</style>
+<style lang="less"></style>
 
 <style lang="less" scoped>
 .col-right {
@@ -290,11 +250,11 @@ provide('data', data)
 }
 
 .slide-fade-enter-active {
-  transition: all .3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .slide-fade-leave-active {
-  transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
 }
 
 .slide-fade-enter-from, .slide-fade-enter-to, .slide-fade-leave-to
