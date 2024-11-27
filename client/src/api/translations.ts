@@ -1,5 +1,5 @@
 import type { RouteLocationNormalizedLoadedGeneric } from "vue-router";
-import gettext from "@/gettext";
+import { gettext } from "@/gettext";
 
 export default async function loadTranslations(route: RouteLocationNormalizedLoadedGeneric) {
   if (gettext.current !== "en") {

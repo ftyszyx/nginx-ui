@@ -1,58 +1,55 @@
 <script setup lang="ts">
-import loadTranslations from '@/api/translations'
-import gettext from '@/gettext'
-import { useSettingsStore } from '@/pinia'
-import { theme } from 'ant-design-vue'
-import en_US from 'ant-design-vue/es/locale/en_US'
+import loadTranslations from "@/api/translations";
+import { gettext } from "@/gettext";
+import { useSettingsStore } from "@/pinia";
+import { theme } from "ant-design-vue";
+import en_US from "ant-design-vue/es/locale/en_US";
 
-import zh_CN from 'ant-design-vue/es/locale/zh_CN'
-import zh_TW from 'ant-design-vue/es/locale/zh_TW'
+import zh_CN from "ant-design-vue/es/locale/zh_CN";
+import zh_TW from "ant-design-vue/es/locale/zh_TW";
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import { computed, provide } from 'vue'
+import { computed, provide } from "vue";
 
-const route = useRoute()
+const route = useRoute();
 
-const media = window.matchMedia('(prefers-color-scheme: dark)')
+const media = window.matchMedia("(prefers-color-scheme: dark)");
 
 function callback() {
-  const settings = useSettingsStore()
-  if (settings.preference_theme === 'auto') {
-    if (media.matches)
-      settings.set_theme('dark')
-    else
-      settings.set_theme('light')
-  }
-  else {
-    settings.set_theme(settings.preference_theme)
+  const settings = useSettingsStore();
+  if (settings.preference_theme === "auto") {
+    if (media.matches) settings.set_theme("dark");
+    else settings.set_theme("light");
+  } else {
+    settings.set_theme(settings.preference_theme);
   }
 }
 
-callback()
+callback();
 
 const devicePrefersTheme = computed(() => {
-  return media.matches ? 'dark' : 'light'
-})
+  return media.matches ? "dark" : "light";
+});
 
-provide('devicePrefersTheme', devicePrefersTheme)
+provide("devicePrefersTheme", devicePrefersTheme);
 
-media.addEventListener('change', callback)
+media.addEventListener("change", callback);
 
 const lang = computed(() => {
   switch (gettext.current) {
-    case 'zh_CN':
-      return zh_CN
-    case 'zh_TW':
-      return zh_TW
+    case "zh_CN":
+      return zh_CN;
+    case "zh_TW":
+      return zh_TW;
     default:
-      return en_US
+      return en_US;
   }
-})
+});
 
-const settings = useSettingsStore()
-const is_theme_dark = computed(() => settings.theme === 'dark')
+const settings = useSettingsStore();
+const is_theme_dark = computed(() => settings.theme === "dark");
 
-loadTranslations(route)
+loadTranslations(route);
 </script>
 
 <template>
@@ -71,7 +68,14 @@ loadTranslations(route)
 @import "ant-design-vue/dist/reset.css";
 
 .dark {
-  h1, h2, h3, h4, h5, h6, p, div {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  div {
     color: #fafafa;
   }
 
@@ -114,6 +118,4 @@ loadTranslations(route)
 }
 </style>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

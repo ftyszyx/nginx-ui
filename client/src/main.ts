@@ -5,7 +5,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { createApp } from "vue";
 import VueDOMPurifyHTML from "vue-dompurify-html";
 import App from "./App.vue";
-import gettext from "./gettext";
+import { gettext } from "./gettext";
 import router from "./routes";
 import "@/assets/css/index.css";
 import "@/assets/css/tailwind_out.css";

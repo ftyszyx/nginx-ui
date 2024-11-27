@@ -6,7 +6,6 @@ import acme_user from "@/api/acme_user";
 import { StdCurd } from "@/components/StdDesign/StdDataDisplay";
 import { datetime } from "@/components/StdDesign/StdDataDisplay/StdTableTransformer";
 import { input, switcher } from "@/components/StdDesign/StdDataEntry";
-import gettext from "@/gettext";
 import { message, Tag } from "ant-design-vue";
 
 const columns: Column[] = [

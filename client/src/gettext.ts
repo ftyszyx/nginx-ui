@@ -7,6 +7,6 @@ const gettext = createGettext({
   translations: {},
   silent: true,
 });
-export const { $gettext, $pgettext, $ngettext, $npgettext } = gettext;
 
-// export default gettext
+export const { $gettext, $pgettext, $ngettext, $npgettext } = gettext;
+export { gettext };
