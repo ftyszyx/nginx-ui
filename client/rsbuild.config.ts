@@ -66,6 +66,17 @@ export default defineConfig({
       css: "static/css/[name].[contenthash:8].css",
     },
   },
+  server: {
+    port: 3002,
+    proxy: {
+      "/api": {
+        target: process.env.VITE_PROXY_TARGET || "http://localhost:9000",
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+    },
+  },
   source: {
     entry: {
       index: path.resolve(__dirname, "src/main.ts"),
